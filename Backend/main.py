@@ -1,6 +1,7 @@
 import os
 
 from gpt import *
+from qwen import *
 from video import *
 from utils import *
 from search import *
@@ -21,6 +22,7 @@ load_dotenv("../.env")
 # Set environment variables
 SESSION_ID = os.getenv("TIKTOK_SESSION_ID")
 openai_api_key = os.getenv('OPENAI_API_KEY')
+dashscope_api_key = os.getenv('DASHSCOPE_API_KEY')
 change_settings({"IMAGEMAGICK_BINARY": os.getenv("IMAGEMAGICK_BINARY")})
 
 # Initialize Flask
@@ -33,6 +35,7 @@ PORT = 8080
 AMOUNT_OF_STOCK_VIDEOS = 5
 GENERATING = False
 
+qwen = Qwen()
 
 # Generation Endpoint
 @app.route("/api/generate", methods=["POST"])
@@ -86,7 +89,10 @@ def generate():
             )
 
         # Generate a script
-        script = generate_script(data["videoSubject"], paragraph_number, ai_model)  # Pass the AI model to the script generation
+        if ai_model in ["qwen-turbo", "qwen-max"]:
+            script = qwen.generate_script(data["videoSubject"], paragraph_number, ai_model)  # Pass the AI model to the script generation
+        else:
+            script = generate_script(data["videoSubject"], paragraph_number, ai_model)
         voice = data["voice"]
 
         if not voice:
@@ -94,9 +100,14 @@ def generate():
             voice = "en_us_001"
 
         # Generate search terms
-        search_terms = get_search_terms(
-            data["videoSubject"], AMOUNT_OF_STOCK_VIDEOS, script, ai_model
-        )
+        if ai_model in ["qwen-turbo", "qwen-max"]:
+            search_terms = qwen.get_search_terms(
+                data["videoSubject"], AMOUNT_OF_STOCK_VIDEOS, script, ai_model
+            )
+        else:
+            search_terms = get_search_terms(
+                data["videoSubject"], AMOUNT_OF_STOCK_VIDEOS, script, ai_model
+            )
 
         # Search for a video of the given search term
         video_urls = []
@@ -221,7 +232,10 @@ def generate():
             # Only proceed with YouTube upload if the toggle is True  and client_secret.json exists.
             if not SKIP_YT_UPLOAD:
                 # Define metadata for the video
-                title, description, keywords = generate_metadata(data["videoSubject"], script, ai_model)  
+                if ai_model in ["qwen-turbo", "qwen-max"]:
+                    title, description, keywords = qwen.generate_metadata(data["videoSubject"], script, ai_model)
+                else:
+                    title, description, keywords = generate_metadata(data["videoSubject"], script, ai_model)  
 
                 print(colored("[-] Metadata for YouTube upload:", "blue"))
                 print(colored("   Title: ", "blue"))

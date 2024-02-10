@@ -81,7 +81,11 @@ def choose_random_song() -> str:
         str: The path to the chosen song.
     """
     try:
-        songs = os.listdir("../Songs")
+        # list the songs except the .DS_Store file
+        songs = [song for song in os.listdir("../Songs") if song != ".DS_Store" or song != "__MACOSX"]
+
+        # songs = os.listdir("../Songs")
+
         song = random.choice(songs)
         logger.info(colored(f"Chose song: {song}", "green"))
         return f"../Songs/{song}"
