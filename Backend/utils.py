@@ -82,7 +82,7 @@ def choose_random_song() -> str:
     """
     try:
         # list the songs except the .DS_Store file
-        songs = [song for song in os.listdir("../Songs") if song != ".DS_Store" or song != "__MACOSX"]
+        songs = [song for song in os.listdir("../Songs") if song != ".DS_Store" and song != "__MACOSX"]
 
         # songs = os.listdir("../Songs")
 

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import os
 
 # Load environment variables
-load_dotenv("../.env")
+# load_dotenv("../.env")
 
 # Set environment variables
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')

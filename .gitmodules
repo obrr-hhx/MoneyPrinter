@@ -1,0 +1,3 @@
+[submodule "tencentcloud_speech_sdk_python"]
+	path = tencentcloud_speech_sdk_python
+	url = https://github.com/TencentCloud/tencentcloud-speech-sdk-python

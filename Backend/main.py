@@ -7,6 +7,7 @@ from utils import *
 from search import *
 from uuid import uuid4
 from tiktokvoice import *
+from xunfeitts import *
 from flask_cors import CORS
 from termcolor import colored
 from dotenv import load_dotenv
@@ -17,7 +18,7 @@ from moviepy.config import change_settings
 
 
 # Load environment variables
-load_dotenv("../.env")
+# load_dotenv("../.env1")
 
 # Set environment variables
 SESSION_ID = os.getenv("TIKTOK_SESSION_ID")
@@ -34,8 +35,6 @@ HOST = "0.0.0.0"
 PORT = 8080
 AMOUNT_OF_STOCK_VIDEOS = 5
 GENERATING = False
-
-qwen = Qwen()
 
 # Generation Endpoint
 @app.route("/api/generate", methods=["POST"])
@@ -87,13 +86,14 @@ def generate():
                     "data": [],
                 }
             )
+        voice = data["voice"]
+        qwen = Qwen("zh") if voice == "zh_xiaoyan" else Qwen()
 
         # Generate a script
         if ai_model in ["qwen-turbo", "qwen-max"]:
             script = qwen.generate_script(data["videoSubject"], paragraph_number, ai_model)  # Pass the AI model to the script generation
         else:
             script = generate_script(data["videoSubject"], paragraph_number, ai_model)
-        voice = data["voice"]
 
         if not voice:
             print(colored("[!] No voice was selected. Defaulting to \"en_us_001\"", "yellow"))
@@ -192,7 +192,10 @@ def generate():
                     }
                 )
             current_tts_path = f"../temp/{uuid4()}.mp3"
-            tts(sentence, voice, filename=current_tts_path)
+            if voice == "zh_xiaoyan":
+                xunfeitts(sentence, voice, filename=current_tts_path)
+            else:
+                tts(sentence, voice, filename=current_tts_path)
             audio_clip = AudioFileClip(current_tts_path)
             paths.append(audio_clip)
 

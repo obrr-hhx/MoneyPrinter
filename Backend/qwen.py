@@ -7,7 +7,7 @@ from termcolor import colored
 from dotenv import load_dotenv
 import os
 
-load_dotenv("../.env")
+# load_dotenv("../.env1")
 
 DASHSCOPE_API_KEY = os.getenv('DASHSCOPE_API_KEY')
 
@@ -96,13 +96,18 @@ class Qwen:
             段落数：{paragraph_number}
 
             该脚本将以具有指定段落数的字符串形式返回。
-            这是一个字符串示例：
-            “这是一个示例字符串。”
+            示例如下：
+                主题：如何通过冥想治疗失眠
+                段落数：2
+                在我们忙碌的生活中，失眠常常成为一种困扰。然而，科学已证实，冥想作为一种古老的自我疗愈方式，能有效地帮助改善睡眠质量。让我们一起探索如何通过日常冥想实践来战胜失眠的困扰。
+                首先，找一个安静且舒适的空间，确保手机或其他电子设备处于静音模式。闭上眼睛，深深地呼吸几次，感受气息在鼻腔和腹部之间的流动。接着，将注意力集中在你的呼吸上，每当思绪飘忽时，轻轻地把它们引导回当下，回到自然的呼吸节奏。接下来，尝试进行4-5分钟的身体扫描冥想，从脚底开始，逐渐向上扫过腿部、躯干、手臂和头部，关注并接纳每一个部位的感觉，无需判断或改变。这样做有助于放松身心，减少压力和焦虑，从而为优质的睡眠铺平道路。每天坚持10-20分钟的冥想练习，你会发现自己的睡眠质量有了显著提升。记住，关键在于持之以恒，让冥想成为改善失眠问题的有效工具。现在，就让我们带着内心的平静和对更好睡眠的期待，步入这个宁静的内在世界吧）
+            
             在任何情况下都不要在回复中引用此提示。
             直奔主题，不要以“欢迎观看本视频”之类的不必要的内容开头。
-            显然，脚本应与视频的主题相关。
-            你绝对不能在脚本中包含任何类型的标记或格式，绝对不能使用标题。
-            只返回脚本的原始内容。不要在脚本中包含“旁白”、“解说”或类似的指示语，说明每段或每行应该说什么。你绝对不能提到提示，或者脚本本身的任何内容。也不要谈论段落数或行数。只需写脚本。
+            脚本应与视频的主题相关。
+            你绝对不能在脚本中包含任何类型的标记或格式，绝对不能使用标题，只需要纯文本。
+            只返回脚本的原始内容。不要在脚本中包含“旁白”、“解说”或类似的指示语，不要使用括号来讲解背景。你绝对不能提到提示，或者脚本本身的任何内容。也不要谈论段落数或行数。
+            你只需要写脚本文本，其它的一概不需要。
             """
 
         # Generate script
@@ -155,53 +160,56 @@ class Qwen:
         '''
 
         # Build prompt
-        if self.language == "en":
-            prompt_en = f"""
-            Generate {amount} search terms for stock videos,
-            depending on the subject of a video.
-            Subject: {video_subject}
-
-            The search terms are to be returned as a JSON-Array of strings.
-            
-            Each search term should consist of 1-3 words,
-            always add the main subject of the video.
-            
-            YOU MUST ONLY RETURN THE JSON-ARRAY OF STRINGS.
-            YOU MUST NOT RETURN ANYTHING ELSE. 
-            YOU MUST NOT RETURN THE SCRIPT.
-            
-            The search terms must be related to the subject of the video.
-            Here is an example of a JSON-Array of strings:
-            ["search term 1", "search term 2", "search term 3"]
-
-            For context, here is the full text:
-            {script}
-            """
-        else:
-            prompt_zh = f"""
-            生成{amount}个与视频主题相关的库存视频搜索词。
-            主题：{video_subject}
-
-            应将搜索词作为字符串的JSON-Array返回。
-            每个搜索词应由1-3个单词组成，
-            并始终包含视频的主要主题。
-
-            你只能返回JSON-Array的字符串。
-            你不能返回其他任何东西。
-            你不能返回脚本。
-
-            搜索词必须与视频的主题相关。
-            这是一个JSON-Array字符串的示例：
-            ["搜索词1", "搜索词2", "搜索词3"]
-
-            以下是完整文本：
-            {script}
-            """
+        # if self.language == "en":
         
-        if self.language == "en":
-            response = self.generate_response(prompt_en, ai_model)
-        else:
-            response = self.generate_response(prompt_zh, ai_model)
+        prompt_en = f"""
+        Generate {amount} search terms for stock videos,
+        depending on the subject of a video.
+        Subject: {video_subject}
+
+        The search terms are to be returned as a JSON-Array of strings.
+        
+        Each search term should consist of 1-3 words,
+        always add the main subject of the video.
+        
+        YOU MUST ONLY RETURN THE JSON-ARRAY OF STRINGS.
+        YOU MUST NOT RETURN ANYTHING ELSE. 
+        YOU MUST NOT RETURN THE SCRIPT.
+        
+        The search terms must be related to the subject of the video.
+        Here is an example of a JSON-Array of strings:
+        ["search term 1", "search term 2", "search term 3"]
+
+        For context, here is the full text:
+        {script}
+        return english content!!!
+        """
+        # else:
+            # prompt_zh = f"""
+            # 生成{amount}个与视频主题相关的库存视频搜索词。
+            # 主题：{video_subject}
+
+            # 应将搜索词作为字符串的JSON-Array返回。
+            # 每个搜索词应由1-3个单词组成，
+            # 并始终包含视频的主要主题。
+
+            # 你只能返回JSON-Array的字符串。
+            # 你不能返回其他任何东西。
+            # 你不能返回脚本。
+
+            # 搜索词必须与视频的主题相关。
+            # 这是一个JSON-Array字符串的示例：
+            # ["搜索词1", "搜索词2", "搜索词3"]
+
+            # 以下是完整文本：
+            # {script}
+            # """
+        
+        # if self.language == "en":
+        response = self.generate_response(prompt_en, ai_model)
+        # response = self.generate_response("将中文翻译成英文，不要改变任何格式"+response_original, ai_model)
+        # else:
+            # response = self.generate_response(prompt_zh, ai_model)
 
         search_terms = []
         try:

@@ -12,11 +12,14 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from moviepy.video.fx.all import crop
 from moviepy.video.tools.subtitles import SubtitlesClip
-
-load_dotenv("../.env")
+import tencent_asr
+# load_dotenv("../.env1")
 
 ASSEMBLY_AI_API_KEY = os.getenv("ASSEMBLY_AI_API_KEY")
-
+APPID = os.getenv("TENCENT_APPID")
+SECRET_ID = os.getenv("TENCENT_SECRET_ID")
+SECRET_KEY = os.getenv("TENCENT_SECRET_KEY")
+ENGINE_TYPE = "16k_zh"
 
 def save_video(video_url: str, directory: str = "../temp") -> str:
     """
@@ -113,13 +116,16 @@ def generate_subtitles(audio_path: str, sentences: List[str], audio_clips: List[
         print(colored("[+] Creating subtitles using AssemblyAI", "blue"))
         subtitles = __generate_subtitles_assemblyai(audio_path)
     else:
-        print(colored("[+] Creating subtitles locally", "blue"))
-        subtitles = __generate_subtitles_locally(sentences, audio_clips)
+        # print(colored("[+] Creating subtitles locally", "blue"))
+        # subtitles = __generate_subtitles_locally(sentences, audio_clips)
         # print(colored("[-] Local subtitle generation has been disabled for the time being.", "red"))
         # print(colored("[-] Exiting.", "red"))
         # sys.exit(1)
+        tr = tencent_asr.TencentAsr(APPID, SECRET_ID, SECRET_KEY, ENGINE_TYPE)
+        tr.recognize(audio_path)
+        subtitles = tr.export_srt_data()
 
-    with open(subtitles_path, "w") as file:
+    with open(subtitles_path, "w", encoding="utf-8") as file:
         file.write(subtitles)
 
     # Equalize subtitles
@@ -208,7 +214,7 @@ def generate_video(combined_video_path: str, tts_path: str, subtitles_path: str)
     # Make a generator that returns a TextClip when called with consecutive
     generator = lambda txt: TextClip(
         txt,
-        font="../fonts/bold_font.ttf",
+        font="../fonts/SmileySans-Oblique.ttf",
         fontsize=100,
         color="#FFFF00",
         stroke_color="black",
